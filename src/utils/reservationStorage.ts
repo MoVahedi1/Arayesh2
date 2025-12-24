@@ -3,39 +3,61 @@ import { Reservation } from '../types';
 const STORAGE_KEY = 'barbershop_reservations';
 
 export const reservationStorage = {
+  // Get all reservations
   getReservations(): Reservation[] {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
     } catch (error) {
       console.error('Error reading reservations:', error);
       return [];
     }
   },
 
-  saveReservations(reservations: Reservation[]): void {
+  // Save a new reservation
+  saveReservation(reservation: Omit<Reservation, 'id' | 'createdAt'>): Reservation {
     try {
+      const reservations = this.getReservations();
+      const newReservation: Reservation = {
+        ...reservation,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString()
+      };
+      
+      reservations.push(newReservation);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(reservations));
+      
+      return newReservation;
     } catch (error) {
-      console.error('Error saving reservations:', error);
+      console.error('Error saving reservation:', error);
+      throw error;
     }
   },
 
-  addReservation(reservation: Omit<Reservation, 'id' | 'createdAt'>): Reservation {
-    const reservations = this.getReservations();
-    const newReservation: Reservation = {
-      ...reservation,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString()
-    };
-    reservations.push(newReservation);
-    this.saveReservations(reservations);
-    return newReservation;
+  // Delete a reservation
+  deleteReservation(id: string): boolean {
+    try {
+      const reservations = this.getReservations();
+      const filteredReservations = reservations.filter(r => r.id !== id);
+      
+      if (filteredReservations.length < reservations.length) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredReservations));
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error deleting reservation:', error);
+      return false;
+    }
   },
 
-  removeReservation(id: string): void {
-    const reservations = this.getReservations();
-    const filtered = reservations.filter(r => r.id !== id);
-    this.saveReservations(filtered);
+  // Clear all reservations
+  clearReservations(): void {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      console.error('Error clearing reservations:', error);
+    }
   }
 };

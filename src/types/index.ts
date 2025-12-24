@@ -4,17 +4,25 @@ export interface Service {
   description: string;
   price: number;
   duration: number;
-  category: 'hair' | 'beard' | 'color' | 'spa' | 'treatment' | 'package';
+  image?: string;
 }
 
 export interface Reservation {
   id: string;
   name: string;
   phone: string;
-  date: string;
-  time: string;
   serviceId: number;
   serviceName: string;
+  date: string;
+  time: string;
   price: number;
+  duration: number;
   createdAt: string;
+}
+
+export interface FormData {
+  name: string;
+  phone: string;
+  date: string;
+  time: string;
 }

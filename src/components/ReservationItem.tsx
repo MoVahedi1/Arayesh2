@@ -1,72 +1,77 @@
 import React from 'react';
-import { Calendar, Clock, User, Trash2, Scissors } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
+import { Calendar, Clock, DollarSign, Trash2, User } from 'lucide-react';
 import { Reservation } from '../types';
+import { Button } from '../components/ui/button';
 
 interface ReservationItemProps {
   reservation: Reservation;
-  onCancel: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
-export const ReservationItem: React.FC<ReservationItemProps> = ({ reservation, onCancel }) => {
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const options: Intl.DateTimeFormatOptions = { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    };
-    return date.toLocaleDateString('fa-IR', options);
+export const ReservationItem: React.FC<ReservationItemProps> = ({ reservation, onDelete }) => {
+  const handleDelete = () => {
+    if (window.confirm('آیا از حذف این نوبت مطمئن هستید؟')) {
+      onDelete(reservation.id);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fa-IR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   };
 
   return (
-    <Card className="bg-gray-900 border-gray-800 hover:border-yellow-500 transition-all">
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="flex-1 space-y-3">
-            <div className="flex items-center gap-3">
-              <Scissors className="w-5 h-5 text-yellow-500" />
-              <h3 className="text-lg font-semibold text-yellow-500">{reservation.serviceName}</h3>
-            </div>
-            
-            <div className="grid sm:grid-cols-2 gap-3 text-sm">
-              <div className="flex items-center gap-2">
-                <User className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-300">{reservation.name}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-300">{formatDate(reservation.date)}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-300">ساعت {reservation.time}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-400">تلفن:</span>
-                <span className="text-gray-300">{reservation.phone}</span>
-              </div>
-            </div>
-            
-            <div className="pt-3 border-t border-gray-800">
-              <span className="text-yellow-500 font-semibold">
-                {reservation.price.toLocaleString()} تومان
-              </span>
-            </div>
+    <div className="glass rounded-lg p-4 border border-gray-800 hover:border-yellow-500 transition-colors">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-3">
+        <div>
+          <h4 className="text-lg font-semibold text-yellow-500">{reservation.serviceName}</h4>
+          <div className="flex items-center gap-1 text-gray-400 mt-1">
+            <User className="w-4 h-4" />
+            <span className="text-sm">{reservation.name}</span>
           </div>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onCancel(reservation.id)}
-            className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
         </div>
-      </CardContent>
-    </Card>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleDelete}
+          className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </div>
+
+      {/* Details */}
+      <div className="space-y-2 text-sm">
+        <div className="flex items-center gap-2 text-gray-300">
+          <Calendar className="w-4 h-4" />
+          <span>{formatDate(reservation.date)}</span>
+        </div>
+        
+        <div className="flex items-center gap-2 text-gray-300">
+          <Clock className="w-4 h-4" />
+          <span>ساعت {reservation.time}</span>
+        </div>
+        
+        <div className="flex items-center gap-2 text-yellow-500">
+          <DollarSign className="w-4 h-4" />
+          <span className="font-semibold">{reservation.price.toLocaleString()} تومان</span>
+        </div>
+      </div>
+
+      {/* Phone Number */}
+      <div className="mt-3 pt-3 border-t border-gray-800">
+        <div className="flex items-center gap-2 text-gray-400 text-sm">
+          <span>تلفن:</span>
+          <span>{reservation.phone}</span>
+        </div>
+      </div>
+    </div>
   );
 };
