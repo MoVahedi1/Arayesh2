@@ -1,181 +1,129 @@
 import React, { useState } from 'react';
 import { HeroSection } from './components/HeroSection';
 import { ServicesGrid } from './components/ServicesGrid';
-import { ReservationModal } from './components/ReservationModal';
 import { MyReservations } from './components/MyReservations';
-import { About } from './components/About';
-import { BarberBio } from './components/BarberBio';
-import { Gallery } from './components/Gallery';
+import { ReservationModal } from './components/ReservationModal';
 import { useReservation } from './hooks/useReservation';
 import { Service } from './types';
 
 const services: Service[] = [
   {
     id: 1,
-    name: 'کات موی کلاسیک',
-    description: 'کات موی تمیز و حرفه‌ای با تکنیک‌های روز دنیا و با توجه به فرم صورت شما',
+    name: 'کات موی حرفه‌ای',
+    description: 'کات موی مدرن و حرفه‌ای با تکنیک‌های روز دنیا، متناسب با فرم صورت و سلیقه شما',
     price: 150000,
-    duration: 30,
-    category: 'hair'
+    duration: 45
   },
   {
     id: 2,
-    name: 'ریش‌تراشی سلطنتی',
-    description: 'ریش‌تراشی با تیغ گرم، حوله داغ و ماساژ صورت برای تجربه‌ای لوکس',
-    price: 200000,
-    duration: 45,
-    category: 'beard'
+    name: 'ریش‌تراشی سنتی',
+    description: 'ریش‌تراشی با تیغ و صابون سنتی همراه با ماساژ صورت و حوله گرم',
+    price: 120000,
+    duration: 30
   },
   {
     id: 3,
-    name: 'مدل موی مدرن',
-    description: 'مدل‌های روز اروپا با تکنیک‌های پیشرفته و محصولات باکیفیت',
+    name: 'رنگ مو و لایت',
+    description: 'رنگ موی حرفه‌ای با بهترین مارک‌های جهانی و لایت‌های مدرن',
     price: 250000,
-    duration: 60,
-    category: 'hair'
+    duration: 90
   },
   {
     id: 4,
-    name: 'رنگ و لایت مردانه',
-    description: 'رنگ‌های طبیعی و لایت‌های مدرن مخصوص آقایان با بهترین مارک‌ها',
-    price: 350000,
-    duration: 90,
-    category: 'color'
+    name: 'ماساژ صورت',
+    description: 'ماساژ صورت با روغن‌های طبیعی برای جوانسازی پوست و رفع خستگی',
+    price: 80000,
+    duration: 20
   },
   {
     id: 5,
-    name: 'اسپا درمانی صورت',
-    description: 'ماساژ صورت، ماسک‌های درمانی و پاکسازی پوست برای آقایان',
-    price: 300000,
-    duration: 60,
-    category: 'spa'
+    name: 'شستشو و حالت دادن',
+    description: 'شستشوی کامل مو با شامپوهای حرفه‌ای و حالت دادن با محصولات برتر',
+    price: 100000,
+    duration: 25
   },
   {
     id: 6,
-    name: 'شکل‌دهی ریش و سبیل',
-    description: 'اصلاح و فرم‌دهی حرفه‌ای ریش و سبیل با تکنیک‌های تخصصی',
-    price: 100000,
-    duration: 20,
-    category: 'beard'
-  },
-  {
-    id: 7,
-    name: 'درمان موی سر',
-    description: 'درمان ریزش مو و تقویت موها با بهترین محصولات درمانی',
-    price: 400000,
-    duration: 45,
-    category: 'treatment'
-  },
-  {
-    id: 8,
-    name: 'پکیج کامل',
-    description: 'شامل تمام خدمات با تخفیف ویژه برای تجربه‌ای کامل',
-    price: 800000,
-    duration: 120,
-    category: 'package'
+    name: 'اصلاح ابرو و صورت',
+    description: 'اصلاح دقیق ابرو با نخ و تمیزکاری کامل صورت با تکنیک‌های مدرن',
+    price: 60000,
+    duration: 15
   }
 ];
 
 function App() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const [activeSection, setActiveSection] = useState<'home' | 'services' | 'about' | 'team' | 'gallery' | 'reservations'>('home');
-  const { reservations, addReservation, removeReservation } = useReservation();
+  const { addReservation } = useReservation();
 
   const handleReserve = (service: Service) => {
     setSelectedService(service);
-    setShowModal(true);
+    setIsModalOpen(true);
   };
 
-  const handleReservationSubmit = (data: any) => {
+  const handleReservationSubmit = (formData: any) => {
     if (selectedService) {
       addReservation({
-        name: data.name,
-        phone: data.phone,
-        date: data.date,
-        time: data.time,
+        ...formData,
         serviceId: selectedService.id,
         serviceName: selectedService.name,
-        price: selectedService.price
+        price: selectedService.price,
+        duration: selectedService.duration
       });
-      setShowModal(false);
+      setIsModalOpen(false);
       setSelectedService(null);
-      setActiveSection('reservations');
     }
   };
 
-  const handleCancelReservation = (id: string) => {
-    removeReservation(id);
-  };
-
-  const renderNavigation = () => (
-    <nav className="bg-black border-b border-gray-800 sticky top-0 z-40">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
-              <span className="text-black font-bold">B</span>
-            </div>
-            <span className="text-yellow-500 font-bold text-xl">باربرشاپ لوکس</span>
-          </div>
-          
-          <div className="hidden md:flex items-center gap-6">
-            {[
-              { id: 'home', label: 'خانه' },
-              { id: 'services', label: 'خدمات' },
-              { id: 'about', label: 'درباره ما' },
-              { id: 'team', label: 'تیم' },
-              { id: 'gallery', label: 'گالری' },
-              { id: 'reservations', label: 'نوبت‌های من' }
-            ].map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveSection(item.id as any)}
-                className={`transition-colors ${
-                  activeSection === item.id
-                    ? 'text-yellow-500'
-                    : 'text-gray-300 hover:text-yellow-500'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </nav>
-  );
-
-  const renderContent = () => {
-    switch (activeSection) {
-      case 'home':
-        return <HeroSection />;
-      case 'services':
-        return <ServicesGrid services={services} onReserve={handleReserve} />;
-      case 'about':
-        return <About />;
-      case 'team':
-        return <BarberBio />;
-      case 'gallery':
-        return <Gallery />;
-      case 'reservations':
-        return <MyReservations reservations={reservations} onCancel={handleCancelReservation} />;
-      default:
-        return <HeroSection />;
-    }
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedService(null);
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {renderNavigation()}
-      {renderContent()}
-      
-      <ReservationModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        service={selectedService}
-        onSubmit={handleReservationSubmit}
-      />
+    <div className="min-h-screen bg-black" dir="rtl">
+      {/* Header */}
+      <header className="sticky top-0 z-40 glass border-b border-gray-800">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
+                <span className="text-black font-bold text-lg">ب</span>
+              </div>
+              <span className="text-xl font-bold gradient-text">باربرشاپ لوکس</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-gray-400 text-sm">رزرو آنلاین</span>
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main>
+        <HeroSection />
+        <ServicesGrid services={services} onReserve={handleReserve} />
+        <MyReservations />
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 border-t border-gray-800 py-8 px-4">
+        <div className="max-w-6xl mx-auto text-center">
+          <p className="text-gray-400 mb-2">© ۱۴۰۳ باربرشاپ لوکس - تمام حقوق محفوظ است</p>
+          <p className="text-gray-500 text-sm">با ❤️ ساخته شده برای آقایان شیک‌پوش</p>
+        </div>
+      </footer>
+
+      {/* Reservation Modal */}
+      {selectedService && (
+        <ReservationModal
+          isOpen={isModalOpen}
+          service={selectedService}
+          onClose={handleCloseModal}
+          onSubmit={handleReservationSubmit}
+        />
+      )}
     </div>
   );
 }

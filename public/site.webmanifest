@@ -1,0 +1,18 @@
+{
+  "name": "باربرشاپ لوکس",
+  "short_name": "باربرشاپ",
+  "description": "رزرو آنلاین نوبت برای آرایشگاه مردانه",
+  "start_url": "/barbershop-luxury/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
